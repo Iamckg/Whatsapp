@@ -1,0 +1,107 @@
+<aura:component controller="WhatsAppLWCService" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="recordId" type="String" /> 
+    <aura:attribute name="messageList" type="List" />
+    <aura:attribute name="errors" type="String" />
+    <aura:attribute name="customerPhone" type="String" />
+    <aura:attribute name="customerNo" type="String" />
+    <aura:attribute name="chatMessage" type="String" />
+    <aura:attribute name="isSpinner" type="Boolean" default="false" />
+    <aura:attribute name="chatEnabled" type="Boolean" default="false" />
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" /> 
+    <!--  <lightning:empApi aura:id="empApi"/> -->
+    
+    <lightning:card variant="Narrow">
+        
+        <div class="slds-p-horizontal_small">
+            <section role="log" class="slds-chat" aura:id="chatSection">
+               <!-- <lightning:input aura:id="tel" type="tel" messageWhenValueMissing="Please provide a valid contact no to chat with" required="true" variant="label-hidden" name="Phone"  placeholder="Enter Customer Phone Number and click next" /> -->
+                <br />
+                <lightning:button variant="brand" label="Chat with Customer" title="Chat with Customer" onclick="{!c.handlelistAllMessageByCustomer}" />
+            </section>
+
+              <section role="log" class="messageContent slds-chat slds-scrollable" aura:id="messageSection">
+                <ul class="slds-chat-list">
+                    <aura:iteration items="{!v.messageList}" var="message" indexVar="index">
+                        <aura:if isTrue="{!message.Outgoing__c}">
+                            <!-- Message From Salesforce (Outgoing) -->
+                            <li class="slds-chat-listitem slds-chat-listitem_outbound" key="{!message.Id}">
+                                <div class="slds-chat-message">
+                                    <div class="slds-chat-message__body">
+                                        <div class="slds-chat-message__text slds-chat-message__text_outbound">
+                                            
+                                                <lightning:formattedRichText value="{!message.MessageContent__c}" />
+        
+                                        </div>
+                                        <div class="slds-chat-message__meta" aria-label="{!message.areaLabel}">{!message.AgentName__c} • <lightning:formattedDateTime value="{!message.CreatedDate}" hour="2-digit" minute="2-digit" /></div>
+                                    </div>
+                                </div>
+                            </li>
+                            <aura:set attribute="else">
+                                <!-- Message From Customer (Incoming) -->
+                                <li class="slds-chat-listitem slds-chat-listitem_inbound" key="{!message.Id}">
+                                    <div class="slds-chat-message">
+                                        <span aria-hidden="true" class="slds-avatar slds-avatar_circle slds-chat-avatar">
+                                            <abbr class="slds-avatar__initials slds-avatar__initials_inverse" title="{!message.CustomerName__c}">AM</abbr>
+                                        </span>
+                                        <div class="slds-chat-message__body">
+                                            <div class="slds-chat-message__text slds-chat-message__text_inbound">
+                                                <span>
+                                                    <lightning:formattedRichText value="{!message.MessageContent__c}" />
+                                                </span>
+                                                <span>
+                                                <!-- Display read/unread symbol -->
+                                                    <!--
+                                                    <aura:if isTrue="{!message.Read__c}">
+                                                        <lightning:icon iconName="utility:preview" size="x-small" alternativeText="Read" />
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon iconName="utility:hide" size="x-small" alternativeText="Unread" />
+                                                        </aura:set>
+                                                    </aura:if>  -->
+                                                 </span>
+                                            </div>
+                                            <div class="slds-chat-message__meta" aria-label="{!message.areaLabel}">{!message.CustomerName__c} • <lightning:formattedDateTime value="{!message.CreatedDate}" hour="2-digit" minute="2-digit" /></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </aura:set>
+                            
+                        </aura:if>   
+                    </aura:iteration> 
+                    
+                </ul>
+            </section>
+              <li class="slds-chat-listitem slds-chat-listitem_inbound">
+                  <div class="slds-chat-message">
+                     <span aria-hidden="true" class="slds-avatar slds-avatar_circle slds-chat-avatar">
+                         <abbr class="slds-avatar__initials slds-avatar__initials_inverse" title="Taylor Watson-Rice">
+                            <lightning:icon iconName="utility:refresh" alternativeText="End Chat" size="x-small" class="slds-icon-text-default slds-chat-icon" />
+                         </abbr>
+                     </span>
+                     <div class="slds-chat-message__body">
+                        <div class="slds-chat-message__text slds-chat-message__text_inbound" onclick="{!c.handlelistAllMessageByCustomer}">
+                          <span class="slds-icon-typing slds-is-animated" title="Customer is typing">
+                          <span class="slds-icon-typing__dot"></span>
+                          <span class="slds-icon-typing__dot"></span>
+                          <span class="slds-icon-typing__dot"></span>
+                          <span class="slds-assistive-text">Customer is typing</span>
+                          </span>
+                         </div>
+                     </div>
+                 </div>
+                </li>
+
+            <aura:if isTrue="{!v.chatEnabled}">
+                <lightning:icon iconName="utility:end_chat" alternativeText="End Chat" size="x-small" class="slds-icon-text-default slds-chat-icon" />
+                <p>
+                    <lightning:buttonIcon onclick="{!c.handleSendMessage}" class="btnIconOverlay" iconName="utility:send" />
+                    <lightning:input messageWhenValueMissing="Please type a valid message before sending it" required="true" value="{!v.chatMessage}" type="text" aura:id="Chatting" class="chat-input" variant="label-hidden" onchange="{!c.handleChatChange}" name="Message" placeholder="type here..." />
+                </p>
+            </aura:if>
+        </div>
+        <div class="slds-card__footer">
+            Powered by <a href="#" target="_blank" aria-label="Salesforce">Salesforce Team</a>
+        </div>
+    </lightning:card>
+</aura:component>
