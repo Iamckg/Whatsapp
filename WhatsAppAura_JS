@@ -1,0 +1,101 @@
+({
+    init: function(component, event, helper) {
+      
+       helper.getCustomerNo(component);
+    
+    },
+    
+    handleChatChange: function (component, event, helper) {
+        component.set("v.chatMessage", event.getSource().get("v.value"));
+        console.log("handleChatChange chatMessage Value: " + event.getSource().get("v.value"));
+    },
+
+    handlelistAllMessageByCustomer: function (component, event, helper) {
+        console.log('recordId ' +component.get("v.recordId"));
+        
+        component.set("v.isSpinner", true);
+        var action = component.get("c.listAllMessageByCustomer");
+        action.setParams({
+            recordId: component.get("v.recordId")
+        });
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                console.log("listAllMessageByCustomer Called Successfully");
+                var result = response.getReturnValue();
+                component.set("v.messageList", result);
+                component.set("v.chatEnabled", true);
+                helper.scrollChatToBottom(component);
+            } else {
+                console.error("Error:", response.getError());
+                component.set("v.errors", response.getError());
+            }
+            component.set("v.isSpinner", false);
+        });
+        $A.enqueueAction(action);
+    },
+
+    handleSendMessage: function (component, event, helper) {
+       
+        var chatMessage = component.get("v.chatMessage");
+        var customerNo = component.get("v.customerPhone");
+        console.log("handleSendMessage Called Successfully");
+        console.log("chatMessage Value: " + chatMessage);
+        console.log("customerNo Value: " + customerNo);
+        
+        component.set("v.isSpinner", true);
+        var action = component.get("c.sendTextMessage");
+        action.setParams({
+            messageContent: chatMessage,
+            toPhone: customerNo
+        });
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var result = response.getReturnValue();
+                var messageList = component.get("v.messageList");
+                messageList.push(result);
+                component.set("v.messageList", messageList);
+                component.set("v.chatMessage", '');
+                helper.scrollChatToBottom(component);
+            } else {
+                console.error("Error:", response.getError());
+                component.set("v.errors", response.getError());
+            }
+            component.set("v.isSpinner", false);
+        });
+        $A.enqueueAction(action);
+    },
+
+    handleAnOtherChat: function (component, event, helper) {
+        event.preventDefault();
+        component.set("v.messageList", undefined);
+        component.set("v.chatEnabled", false);
+    },
+
+    handleEventResponse: function (component, event, helper) {
+        var payload = event.getParam('payload');
+        var MessageId = payload.MessageId__c;
+        var CustomerPhone = payload.CustomerPhone__c;
+        if (component.get("v.customerPhone") === CustomerPhone) {
+            var action = component.get("c.getSingleMessage");
+            action.setParams({
+                recordId: MessageId,
+                customerPhone: CustomerPhone
+            });
+            action.setCallback(this, function (response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var result = response.getReturnValue();
+                    var messageList = component.get("v.messageList");
+                    messageList.push(result);
+                    component.set("v.messageList", messageList);
+                    helper.scrollChatToBottom(component);
+                } else {
+                    console.error("Error:", response.getError());
+                }
+            });
+            $A.enqueueAction(action);
+        }
+    }
+})
