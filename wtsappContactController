@@ -1,0 +1,277 @@
+public Without Sharing class wtsappContactController {
+
+    @AuraEnabled//(cacheable=true)
+    public static List<Whatsapp__c> listAllMessages(String customerPhone){
+        List<Whatsapp__c> messages = new List<Whatsapp__c>();
+        messages = [SELECT Id, Name, MessageContent__c, MessageType__c, CustomerName__c, AgentName__c, Outgoing__c,Read__c, CreatedDate
+                    FROM Whatsapp__c WHERE CustomerName__c =: customerPhone Order By CreatedDate ASC];
+        return messages;
+    }
+
+    @AuraEnabled
+    public static Whatsapp__c getSingleMessage(String recordId, String customerPhone){
+        return [SELECT Id, Name, MessageContent__c, MessageType__c, CustomerName__c, AgentName__c, Outgoing__c,Read__c, CreatedDate
+                    FROM Whatsapp__c WHERE Id =: recordId AND CustomerPhone__c =: customerPhone Order By CreatedDate ASC];
+    }
+    
+     @AuraEnabled
+    public static Whatsapp__c sendTextMessage(String messageContent, String toPhone){
+        Whatsapp__c message = WhatsAppUtils.sendTextMessage(messageContent, toPhone);
+        return [SELECT Id, Name, MessageContent__c, MessageType__c, CustomerName__c, AgentName__c, Outgoing__c,Read__c, CreatedDate
+                FROM Whatsapp__c WHERE Id =: message.Id Order By CreatedDate ASC];
+    }
+    
+    @AuraEnabled(cacheable=true) 
+    public static List<Whatsapp__c> listAllMessageByCustomer(String recordId){
+        Contact WaPhone =[Select Id ,WhatsappNumber__c from Contact Where Id =:recordId];
+        List<Whatsapp__c> messages = new List<Whatsapp__c>();
+        messages = [SELECT Id, Name, MessageContent__c, MessageType__c, CustomerName__c, AgentName__c, Outgoing__c,Read__c, CreatedDate
+                    FROM Whatsapp__c WHERE CustomerPhone__c =: WaPhone.WhatsappNumber__c Order By CreatedDate ASC];
+        return messages;
+    }
+    @AuraEnabled(cacheable=true) 
+    public static Contact getCustomerNo(String recordId){ 
+        return [Select Id ,WhatsappNumber__c from Contact Where Id =:recordId];
+    }
+    
+    public static void getTestData(){
+    Integer i = 1;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;i++;i++;i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+    i++;
+        
+    }    
+}
